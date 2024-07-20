@@ -1,0 +1,405 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\PREMA> mysql -u root -p
+Enter password: *******
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 7
+Server version: 11.3.2-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> CREATE DATABASE IMDB;
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| imdb               |
+| information_schema |
+| mysql              |
+| pat_28             |
+| performance_schema |
+| sys                |
++--------------------+
+6 rows in set (0.003 sec)
+
+MariaDB [(none)]> USE IMDB;
+Database changed
+MariaDB [IMDB]> CREATE TABLE Movies (
+    ->     movie_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     title VARCHAR(255) NOT NULL,
+    ->     release_year YEAR,
+    ->     description TEXT
+    -> );
+Query OK, 0 rows affected (0.012 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| movies         |
++----------------+
+1 row in set (0.003 sec)
+
+MariaDB [IMDB]> CREATE TABLE Media (
+    ->     media_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     movie_id INT,
+    ->     media_type ENUM('Video', 'Image'),
+    ->     media_url VARCHAR(255),
+    ->     FOREIGN KEY (movie_id) REFERENCES Movies(movie_id)
+    -> );
+Query OK, 0 rows affected (0.009 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| media          |
+| movies         |
++----------------+
+2 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE Genres (
+    ->     genre_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     genre_name VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| genres         |
+| media          |
+| movies         |
++----------------+
+3 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE Movie_Genres (
+    ->     movie_id INT,
+    ->     genre_id INT,
+    ->     PRIMARY KEY (movie_id, genre_id),
+    ->     FOREIGN KEY (movie_id) REFERENCES Movies(movie_id),
+    ->     FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)
+    -> );
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| genres         |
+| media          |
+| movie_genres   |
+| movies         |
++----------------+
+4 rows in set (0.002 sec)
+
+MariaDB [IMDB]> CREATE TABLE Users (
+    ->     user_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     username VARCHAR(50) NOT NULL,
+    ->     email VARCHAR(100) NOT NULL,
+    ->     password VARCHAR(255) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| genres         |
+| media          |
+| movie_genres   |
+| movies         |
+| users          |
++----------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE Reviews (
+    ->     review_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     movie_id INT,
+    ->     user_id INT,
+    ->     review_text TEXT,
+    ->     rating INT,
+    ->     review_date DATETIME,
+    ->     FOREIGN KEY (movie_id) REFERENCES Movies(movie_id),
+    ->     FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    -> );
+Query OK, 0 rows affected (0.013 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| genres         |
+| media          |
+| movie_genres   |
+| movies         |
+| reviews        |
+| users          |
++----------------+
+6 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE Artists (
+    ->     artist_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     name VARCHAR(255) NOT NULL,
+    ->     birthdate DATE,
+    ->     bio TEXT
+    -> );
+Query OK, 0 rows affected (0.009 sec)
+
+MariaDB [IMDB]> SHOW TABLES
+    -> ;
++----------------+
+| Tables_in_imdb |
++----------------+
+| artists        |
+| genres         |
+| media          |
+| movie_genres   |
+| movies         |
+| reviews        |
+| users          |
++----------------+
+7 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE Skills (
+    ->     skill_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     skill_name VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| artists        |
+| genres         |
+| media          |
+| movie_genres   |
+| movies         |
+| reviews        |
+| skills         |
+| users          |
++----------------+
+8 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE Artist_Skills (
+    ->     artist_id INT,
+    ->     skill_id INT,
+    ->     PRIMARY KEY (artist_id, skill_id),
+    ->     FOREIGN KEY (artist_id) REFERENCES Artists(artist_id),
+    ->     FOREIGN KEY (skill_id) REFERENCES Skills(skill_id)
+    -> );
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| artist_skills  |
+| artists        |
+| genres         |
+| media          |
+| movie_genres   |
+| movies         |
+| reviews        |
+| skills         |
+| users          |
++----------------+
+9 rows in set (0.001 sec)
+
+MariaDB [IMDB]> CREATE TABLE Roles (
+    ->     role_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     artist_id INT,
+    ->     movie_id INT,
+    ->     role_name VARCHAR(255),
+    ->     FOREIGN KEY (artist_id) REFERENCES Artists(artist_id),
+    ->     FOREIGN KEY (movie_id) REFERENCES Movies(movie_id)
+    -> );
+Query OK, 0 rows affected (0.008 sec)
+
+MariaDB [IMDB]> SHOW TABLES;
++----------------+
+| Tables_in_imdb |
++----------------+
+| artist_skills  |
+| artists        |
+| genres         |
+| media          |
+| movie_genres   |
+| movies         |
+| reviews        |
+| roles          |
+| skills         |
+| users          |
++----------------+
+10 rows in set (0.001 sec)
+
+MariaDB [IMDB]> INSERT INTO Movies (title, release_year, description) VALUES
+    -> ('Inception', 2010, 'A thief who steals corporate secrets through the use of dream-sharing technology.'),
+    -> ('The Matrix', 1999, 'A computer hacker learns from mysterious rebels about the true nature of his reality.');
+Query OK, 2 rows affected (0.003 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM MOVIES;
++----------+------------+--------------+---------------------------------------------------------------------------------------+
+| movie_id | title      | release_year | description                                                                           |
++----------+------------+--------------+---------------------------------------------------------------------------------------+
+|        1 | Inception  |         2010 | A thief who steals corporate secrets through the use of dream-sharing technology.     |
+|        2 | The Matrix |         1999 | A computer hacker learns from mysterious rebels about the true nature of his reality. |
++----------+------------+--------------+---------------------------------------------------------------------------------------+
+2 rows in set (0.002 sec)
+
+MariaDB [IMDB]> INSERT INTO Media (movie_id, media_type, media_url) VALUES
+    -> (1, 'Video', 'https://example.com/inception_trailer.mp4'),
+    -> (1, 'Image', 'https://example.com/inception_poster.jpg'),
+    -> (2, 'Video', 'https://example.com/matrix_trailer.mp4');
+Query OK, 3 rows affected (0.004 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM MEDIA;
++----------+----------+------------+-------------------------------------------+
+| media_id | movie_id | media_type | media_url                                 |
++----------+----------+------------+-------------------------------------------+
+|        1 |        1 | Video      | https://example.com/inception_trailer.mp4 |
+|        2 |        1 | Image      | https://example.com/inception_poster.jpg  |
+|        3 |        2 | Video      | https://example.com/matrix_trailer.mp4    |
++----------+----------+------------+-------------------------------------------+
+3 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Genres (genre_name) VALUES
+    -> ('Sci-Fi'),
+    -> ('Action'),
+    -> ('Drama');
+Query OK, 3 rows affected (0.003 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM GENRES;
++----------+------------+
+| genre_id | genre_name |
++----------+------------+
+|        1 | Sci-Fi     |
+|        2 | Action     |
+|        3 | Drama      |
++----------+------------+
+3 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Movie_Genres (movie_id, genre_id) VALUES
+    -> (1, 1),
+    -> (1, 2),
+    -> (2, 1),
+    -> (2, 2);
+Query OK, 4 rows affected (0.003 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM MOVIE_GENRES;
++----------+----------+
+| movie_id | genre_id |
++----------+----------+
+|        1 |        1 |
+|        2 |        1 |
+|        1 |        2 |
+|        2 |        2 |
++----------+----------+
+4 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Users (username, email, password) VALUES
+    -> ('john_doe', 'john@example.com', 'password123'),
+    -> ('jane_doe', 'jane@example.com', 'password456');
+Query OK, 2 rows affected (0.003 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM USERS;
++---------+----------+------------------+-------------+
+| user_id | username | email            | password    |
++---------+----------+------------------+-------------+
+|       1 | john_doe | john@example.com | password123 |
+|       2 | jane_doe | jane@example.com | password456 |
++---------+----------+------------------+-------------+
+2 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Reviews (movie_id, user_id, review_text, rating, review_date) VALUES
+    -> (1, 1, 'Amazing movie with mind-bending concepts!', 5, NOW()),
+    -> (2, 2, 'A revolutionary film in the action genre.', 4, NOW());
+Query OK, 2 rows affected (0.004 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM REVIEWS;
++-----------+----------+---------+-------------------------------------------+--------+---------------------+
+| review_id | movie_id | user_id | review_text                               | rating | review_date         |
++-----------+----------+---------+-------------------------------------------+--------+---------------------+
+|         1 |        1 |       1 | Amazing movie with mind-bending concepts! |      5 | 2024-07-20 16:25:27 |
+|         2 |        2 |       2 | A revolutionary film in the action genre. |      4 | 2024-07-20 16:25:27 |
++-----------+----------+---------+-------------------------------------------+--------+---------------------+
+2 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Artists (name, birthdate, bio) VALUES
+    -> ('Leonardo DiCaprio', '1974-11-11', 'An American actor and film producer.'),
+    -> ('Keanu Reeves', '1964-09-02', 'A Canadian actor. Known for his roles in The Matrix.');
+Query OK, 2 rows affected (0.009 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM ARTISTS;
++-----------+-------------------+------------+------------------------------------------------------+
+| artist_id | name              | birthdate  | bio                                                  |
++-----------+-------------------+------------+------------------------------------------------------+
+|         1 | Leonardo DiCaprio | 1974-11-11 | An American actor and film producer.                 |
+|         2 | Keanu Reeves      | 1964-09-02 | A Canadian actor. Known for his roles in The Matrix. |
++-----------+-------------------+------------+------------------------------------------------------+
+2 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Skills (skill_name) VALUES
+    -> ('Acting'),
+    -> ('Directing'),
+    -> ('Producing');
+Query OK, 3 rows affected (0.003 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM SKILLS;
++----------+------------+
+| skill_id | skill_name |
++----------+------------+
+|        1 | Acting     |
+|        2 | Directing  |
+|        3 | Producing  |
++----------+------------+
+3 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Artist_Skills (artist_id, skill_id) VALUES
+    -> (1, 1),
+    -> (2, 1);
+Query OK, 2 rows affected (0.003 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM ARTIST_SKILLS;
++-----------+----------+
+| artist_id | skill_id |
++-----------+----------+
+|         1 |        1 |
+|         2 |        1 |
++-----------+----------+
+2 rows in set (0.000 sec)
+
+MariaDB [IMDB]> INSERT INTO Roles (artist_id, movie_id, role_name) VALUES
+    -> (1, 1, 'Dom Cobb'),
+    -> (2, 2, 'Neo');
+Query OK, 2 rows affected (0.003 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [IMDB]> SELECT * FROM ROLES;
++---------+-----------+----------+-----------+
+| role_id | artist_id | movie_id | role_name |
++---------+-----------+----------+-----------+
+|       1 |         1 |        1 | Dom Cobb  |
+|       2 |         2 |        2 | Neo       |
++---------+-----------+----------+-----------+
+2 rows in set (0.000 sec)
+
+MariaDB [IMDB]>
